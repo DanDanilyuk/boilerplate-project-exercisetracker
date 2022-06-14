@@ -21,6 +21,17 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+app.get('/api/users', (req, res) => {
+  User.find({}, function (err, users) {
+    if(err) return console.log(err);
+    const filteredUsers = users.map(user => ({
+      username: user.username,
+      id: user._id 
+    }));
+    res.send(filteredUsers);
+  });
+})
+
 app.post('/api/users', (req, res) => {
   const username = req.body.username;
   const filter = { username: username };
