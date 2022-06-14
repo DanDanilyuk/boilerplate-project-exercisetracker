@@ -1,13 +1,13 @@
 const express = require('express')
 const app = express()
+require('dotenv').config()
+const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: true })); 
+const mySecret = process.env['MONGO_URI'];
 const mongoose = require('mongoose');
 mongoose.connect(mySecret, { useNewUrlParser: true, useUnifiedTopology: true });
-const cors = require('cors')
-const bodyParser = require('body-parser')
 const Schema = mongoose.Schema;
-const mySecret = process.env['MONGO_URI'];
-require('dotenv').config()
+const cors = require('cors')
 
 const userSchema = new Schema({
   username: { type: String, required: true }
@@ -21,9 +21,14 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-
-
-
+app.post('/api/users', (req, res) => {
+  const username = req.body.username;
+  const filter = { username: username };
+  User.findOneAndUpdate(filter, filter, { upsert: true, new: true }, (err, matchedUser) => {
+    if(err) return console.log(err);
+    res.json({ username: matchedUser.username, id: matchedUser._id });
+  });
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
