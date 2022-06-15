@@ -37,7 +37,7 @@ app.get('/api/users', (req, res) => {
     if(err) return console.log(err);
     const filteredUsers = users.map(user => ({
       username: user.username,
-      id: user._id 
+      _id: user._id 
     }));
     res.send(filteredUsers);
   });
@@ -48,12 +48,12 @@ app.post('/api/users', (req, res) => {
   const filter = { username: username };
   User.findOneAndUpdate(filter, filter, { upsert: true, new: true }, (err, matchedUser) => {
     if(err) return console.log(err);
-    res.json({ username: matchedUser.username, id: matchedUser._id });
+    res.json({ username: matchedUser.username, _id: matchedUser._id });
   });
 });
 
-app.post('/api/users/:id/exercises', (req, res) => {
-  const userId = req.params.id || req.body.id;
+app.post('/api/users/:_id/exercises', (req, res) => {
+  const userId = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
   const date = req.body.date;
@@ -82,8 +82,8 @@ app.post('/api/users/:id/exercises', (req, res) => {
   });
 });
 
-app.get('/api/users/:id/logs', (req, res) => {
-  const userId = req.params.id;
+app.get('/api/users/:_id/logs', (req, res) => {
+  const userId = req.params._id;
 
   User.findById(userId, (err, matchedUser) => {
     if(err) return console.log(err);
