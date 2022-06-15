@@ -63,22 +63,18 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     duration: duration,
     date: date
   }
-  Exercise.create(newExercise, (err, createdExercise) => {
-    if(err) return console.log(err);
-  });
-
   User.findById(userId, (err, matchedUser) => {
     if(err) return console.log(err);
-    const exerciseQuery = { userId: userId };
-    Exercise.find(exerciseQuery, (exerciseErr, matchedExercises) => {
-      if(exerciseErr) return console.log(exerciseErr);
-      const parsedExercises = matchedExercises.map(exercise => ({
-        description: exercise.description,
-        duration: exercise.duration,
-        date: exercise.date.toDateString(),
-      }));
-      res.json({ username: matchedUser.username, id: matchedUser._id, exercises: parsedExercises });
-    })
+    Exercise.create(newExercise, (err, createdExercise) => {
+      if(err) return console.log(err);
+      res.json({ 
+        _id: matchedUser._id,
+        username: matchedUser.username, 
+        description: createdExercise.description,
+        duration: createdExercise.duration,
+        date: createdExercise.date.toDateString()
+      });
+    });
   });
 });
 
@@ -95,7 +91,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
         duration: exercise.duration,
         date: exercise.date.toDateString(),
       }));
-      res.json({ username: matchedUser.username, id: matchedUser._id, exercises: parsedExercises });
+      res.json({ username: matchedUser.username, count: parsedExercises.length, _id: matchedUser._id, log: parsedExercises });
     })
   });
 });
