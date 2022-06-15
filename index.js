@@ -77,7 +77,7 @@ app.post('/api/users/:id/exercises', (req, res) => {
         duration: exercise.duration,
         date: exercise.date.toDateString(),
       }));
-      res.json({ ...matchedUser, exercises: parsedExercises });
+      res.json({ username: matchedUser.username, id: matchedUser._id, exercises: parsedExercises });
     })
   });
 });
@@ -95,7 +95,7 @@ app.get('/api/users/:id/logs', (req, res) => {
         duration: exercise.duration,
         date: exercise.date.toDateString(),
       }));
-      res.json({ ...matchedUser, exercises: parsedExercises });
+      res.json({ username: matchedUser.username, id: matchedUser._id, exercises: parsedExercises });
     })
   });
 });
