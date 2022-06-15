@@ -80,8 +80,33 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 app.get('/api/users/:_id/logs', (req, res) => {
   const userId = req.params._id;
+  const from = req.body.from;
+  const to = req.body.to;
+  const limit = req.body.limit;
 
-  User.findById(userId, (err, matchedUser) => {
+  let query = User.findById(userId);
+
+  if (limit) {
+    query = query.limit(limit);
+  };
+
+  if (from) {
+    query = query.find({
+        date: {
+            $gte: new Date(from)
+        }
+    })
+  };
+
+  if (to) {
+    query = query.find({
+        date: {
+            $lt: new Date(to)
+        }
+    })
+  };
+
+  query.exec(() => {
     if(err) return console.log(err);
     const exerciseQuery = { userId: userId };
     Exercise.find(exerciseQuery, (exerciseErr, matchedExercises) => {
