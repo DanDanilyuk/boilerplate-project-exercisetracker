@@ -80,11 +80,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 app.get('/api/users/:_id/logs', (req, res) => {
   const userId = req.params._id;
-  const from = req.body.from;
-  const to = req.body.to;
-  const limit = req.body.limit;
-
-  let query = User.findById(userId);
+  const from = req.query.from;
+  const to = req.query.to;
+  const limit = req.query.limit;
+  const exerciseQuery = { userId: userId };
+  let query = Exercise.find(exerciseQuery);
 
   if (limit) {
     query = query.limit(limit);
@@ -106,20 +106,19 @@ app.get('/api/users/:_id/logs', (req, res) => {
     })
   };
 
-  query.exec(() => {
+    User.findById(userId, (err, matchedUser) => {
     if(err) return console.log(err);
-    const exerciseQuery = { userId: userId };
-    Exercise.find(exerciseQuery, (exerciseErr, matchedExercises) => {
-      if(exerciseErr) return console.log(exerciseErr);
-      const parsedExercises = matchedExercises.map(exercise => ({
-        description: exercise.description,
-        duration: exercise.duration,
-        date: exercise.date.toDateString(),
-      }));
-      res.json({ username: matchedUser.username, count: parsedExercises.length, _id: matchedUser._id, log: parsedExercises });
-    })
+      query.exec((exerciseErr, matchedExercises) => {
+        if(exerciseErr) return console.log(exerciseErr);
+        const parsedExercises = matchedExercises.map(exercise => ({
+          description: exercise.description,
+          duration: exercise.duration,
+          date: exercise.date.toDateString(),
+        }));
+        res.json({ username: matchedUser.username, count: parsedExercises.length, _id: matchedUser._id, log: parsedExercises });
+      })
+    });
   });
-});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
