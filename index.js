@@ -53,7 +53,7 @@ app.post('/api/users', (req, res) => {
 });
 
 app.post('/api/users/:id/exercises', (req, res) => {
-  const userId = req.params.id;
+  const userId = req.params.id || req.body.id;
   const description = req.body.description;
   const duration = req.body.duration;
   const date = req.body.date;
